@@ -1,0 +1,2 @@
+def generate_explanation(bias_results: dict) -> str:
+    return "This is a placeholder explanation. Once Member 3 connects the Gemini API, this will contain the 3-paragraph fairness audit regarding the numbers above."

@@ -7,3 +7,6 @@ female,low,90001,1
 female,low,90001,0
 female,low,90001,0
 female,low,90002,0
+male,low,90002,0
+female,high,90002,1
+male, low,90003,0
