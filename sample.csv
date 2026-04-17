@@ -1,0 +1,9 @@
+Gender,Income,Zip_Code,Hired
+male,high,90210,1
+male,high,90210,1
+male,low,90210,1
+male,high,90211,0
+female,low,90001,1
+female,low,90001,0
+female,low,90001,0
+female,low,90002,0
