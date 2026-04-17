@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 
@@ -30,7 +31,7 @@ def calculate_all_metrics(df: pd.DataFrame) -> dict:
     
     numeric_cols = df_numeric.select_dtypes(include=[np.number]).columns
     
-    proxy_vars = []
+    proxy_vars = {}
     max_corr = 0.0
     
     for col in numeric_cols:
@@ -38,11 +39,17 @@ def calculate_all_metrics(df: pd.DataFrame) -> dict:
             corr = abs(df_numeric['Gender_Code'].corr(df_numeric[col]))
             if not pd.isna(corr):
                 if corr > 0.3:
-                    proxy_vars.append(col)
+                    proxy_vars[col] = round(corr, 2)
                 if corr > max_corr:
                     max_corr = corr
 
+    proxy_bias_pct = max_corr * 100
+    
+    overall_score = (0.50 * gender_bias_pct) + (0.30 * income_bias_pct) + (0.20 * proxy_bias_pct)
+    overall_score = round(min(overall_score, 100.0), 2)
+
     return {
+        "overall_bias_score": overall_score,
         "gender_bias": {
             "metric_name": "Demographic Parity Difference",
             "percentage": gender_bias_pct,

@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from bias_calculator import calculate_all_metrics
-from gemini_explainer import generate_explanation
+from gemini_explainer import get_fairness_explanation
 
 app = FastAPI()
 
@@ -44,7 +44,7 @@ async def analyze_data(file: UploadFile = File(...)):
 
     results = calculate_all_metrics(df)
     
-    explanation = generate_explanation(results)
+    explanation = get_fairness_explanation(results)
     results["explanation"] = explanation
     
     return results
