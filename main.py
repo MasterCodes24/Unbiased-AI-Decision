@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 from bias_calculator import calculate_all_metrics
 from gemini_explainer import get_fairness_explanation
-
+from dotenv import load_dotenv
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
