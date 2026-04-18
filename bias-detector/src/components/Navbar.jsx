@@ -1,67 +1,66 @@
-// Navbar.jsx — The top navigation bar that appears on every page.
-// It's "sticky" so it stays at the top when you scroll down.
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { LogOut } from 'lucide-react';
+import { logout } from '../firebase';
 
-import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+export default function Navbar({ user }) {
+  const location = useLocation();
+  const navigate = useNavigate(); // Initialize the navigator
 
-export default function Navbar() {
-  const location = useLocation(); // Tells us which page we're currently on
+  const handleLogout = async () => {
+    try {
+      await logout(); // 1. Ends the Firebase session
+      navigate('/');  // 2. Forces the browser to go to the Home page
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   return (
-    // sticky top-0 = stays fixed at top of screen when scrolling
-    // z-50 = appears above all other elements (like a floating layer)
-    // backdrop-blur-sm = blurs the background behind the nav (frosted glass effect)
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         
-        {/* Logo + Brand Name */}
-        {/* Link = React Router's version of <a href="/">, navigates without page reload */}
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          {/* The four colored dots that echo the Google logo */}
-          <div className="relative w-8 h-8 flex-shrink-0">
+          <div className="relative w-8 h-8">
             <div className="absolute top-0 left-0 w-3.5 h-3.5 rounded-full bg-google-blue"></div>
             <div className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-google-red"></div>
             <div className="absolute bottom-0 left-0 w-3.5 h-3.5 rounded-full bg-google-green"></div>
             <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-google-yellow"></div>
           </div>
-          <span className="text-xl font-bold text-gray-900">
+          <span className="text-xl font-bold text-gray-900 brand-font">
             Fair<span className="text-google-blue">Lens</span>
           </span>
         </Link>
 
-        {/* Nav Links */}
-        <div className="flex items-center gap-1">
-          <NavLink to="/" active={location.pathname === '/'}>Home</NavLink>
-          <NavLink to="/upload" active={location.pathname === '/upload'}>Analyze</NavLink>
-          <NavLink to="/results" active={location.pathname === '/results'}>Results</NavLink>
-          
-          {/* CTA Button */}
-          <Link
-            to="/upload"
-            className="ml-4 google-btn-primary text-sm"
-          >
-            <ShieldCheck size={16} />
-            Run Audit
-          </Link>
+        {/* Dynamic Auth Section */}
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-xs font-bold text-gray-900 leading-none">{user.displayName}</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-tighter">Verified Auditor</span>
+              </div>
+              <img 
+                src={user.photoURL} 
+                className="w-9 h-9 rounded-full ring-2 ring-gray-50 border border-gray-200" 
+                alt="Profile" 
+              />
+              {/* Changed onClick to use our new handleLogout function */}
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-gray-400 hover:text-google-red transition-colors"
+                title="Logout"
+              >
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="google-btn-primary text-sm px-8">
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </nav>
-  );
-}
-
-// A small helper component for each nav link.
-// It changes style when it's the "active" (current) page.
-function NavLink({ to, active, children }) {
-  return (
-    <Link
-      to={to}
-      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-150
-        ${active 
-          ? 'bg-blue-50 text-google-blue'  // Active = blue background
-          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' // Inactive = grey hover
-        }`}
-    >
-      {children}
-    </Link>
   );
 }

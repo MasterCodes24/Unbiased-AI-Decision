@@ -50,6 +50,11 @@
   .bias-card-red {
     @apply card border-l-4 border-l-google-red;
   }
+
+  .brand-font {
+    font-family: 'Google Sans', sans-serif;
+    letter-spacing: -0.5px;
+  }
 }
 
 /* Custom scrollbar */

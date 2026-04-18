@@ -1,33 +1,53 @@
-// App.jsx — The "traffic controller" of our entire app.
-// React Router reads the URL and decides which page component to show.
-// Think of it like a switch statement: "/" → LandingPage, etc.
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase';
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
 import UploadPage from './pages/UploadPage';
 import ResultsPage from './pages/ResultsPage';
+import LoginPage from './pages/LoginPage';
 
 export default function App() {
-  return (
-    // BrowserRouter: Wraps everything. Makes React "aware" of the browser URL.
-    <BrowserRouter>
-      {/* This outer div ensures the page is always at least full screen height */}
-      <div className="min-h-screen bg-gray-50/50">
-        
-        {/* Navbar renders on EVERY page because it's outside <Routes> */}
-        <Navbar />
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-        {/* Routes: Only ONE of these <Route> components renders at a time */}
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-100 border-t-google-blue rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium">Loading FairLens...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-50/50">
+        <Navbar user={user} />
         <Routes>
-          {/* path="/" → Show LandingPage when URL is exactly "/" */}
           <Route path="/" element={<LandingPage />} />
           
-          {/* path="/upload" → Show UploadPage when URL is "/upload" */}
-          <Route path="/upload" element={<UploadPage />} />
+          {/* Redirect to Upload if already logged in */}
+          <Route path="/login" element={user ? <Navigate to="/upload" /> : <LoginPage />} />
           
-          {/* path="/results" → Show ResultsPage when URL is "/results" */}
-          <Route path="/results" element={<ResultsPage />} />
+          {/* Protected Routes: Redirect to Login if NOT authenticated */}
+          <Route path="/upload" element={user ? <UploadPage /> : <Navigate to="/login" />} />
+          <Route path="/results" element={user ? <ResultsPage /> : <Navigate to="/login" />} />
+          
+          {/* Catch-all: send unknown links to home */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </BrowserRouter>
