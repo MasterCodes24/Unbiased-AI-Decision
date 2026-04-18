@@ -1,5 +1,5 @@
 import pandas as pd
-from bias_calculator import calculate_all_metrics
+from backend.bias_calculator import calculate_all_metrics
 
 def test_gender_bias():
     result = calculate_all_metrics(pd.DataFrame({"Gender":["m","m","f","f"],"Hired":[1,1,0,0]}))
