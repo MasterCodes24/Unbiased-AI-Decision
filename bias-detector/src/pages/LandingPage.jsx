@@ -32,7 +32,7 @@ export default function LandingPage() {
                           border border-blue-100 rounded-full px-4 py-1.5 text-sm 
                           font-medium mb-8 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-google-blue animate-pulse"></span>
-            GDG Solution Challenge 2024
+            GDG Solution Challenge 2026
           </div>
 
           {/* Main headline — 'tracking-tight' reduces letter spacing for large text */}
